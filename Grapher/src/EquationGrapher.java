@@ -1,3 +1,12 @@
+/*
+* @author Vishnu Bharath
+*
+*
+*
+* */
+
+
+
 import org.nfunk.jep.JEP;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,9 +29,10 @@ import javax.swing.*;
 public class EquationGrapher extends JFrame {
     private JTextField equationField;
     private GraphPanel graphPanel;
-    public JEP myParser = new org.nfunk.jep.JEP(); //equation parser
+    public JEP myParser = new org.nfunk.jep.JEP(); //equation parser initialization
 
-    //equationdata object
+    // this is my equationdata object
+    // it has two fields, a color, and the equation string
     private static class EquationData {
         String equation;
         Color color;
@@ -33,29 +43,28 @@ public class EquationGrapher extends JFrame {
         }
     }
 
-    //arraylist to store equations
+    //arraylist to store equations using equationdata object
     private final java.util.List<EquationData> equations = new java.util.ArrayList<>();
 
 
     public EquationGrapher() {
 
-
+        //this is some parser setup, reference JEP documentation to learn more
         myParser.setImplicitMul(true);
-
         // Load the standard functions
         myParser.addStandardFunctions();
-
         // Load the standard constants, and complex variables/functions
         myParser.addStandardConstants();
         myParser.addComplex();
+
+        //jframe setup
         setTitle("Equation Grapher");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1400, 1400);
         setLocationRelativeTo(null);
-
         JPanel panel = new JPanel();
 
-        // Label for the equation field with "y="
+        // Label for the equation field with "y=" for user understanding
         JLabel equationLabel = new JLabel("y= ");
         equationField = new JTextField(20);
 
@@ -138,12 +147,11 @@ public class EquationGrapher extends JFrame {
         JComboBox<String> operatorDropdown = new JComboBox<>(operatorDescriptions);
 
         //other fields
-        equationField = new JTextField(20);
-        JButton graphButton = new JButton("Graph");
-        JButton colorButton = new JButton("Choose Color");
-        graphButton.addActionListener(new GraphButtonListener());
+        equationField = new JTextField(20); //equation entry box
+        JButton graphButton = new JButton("Graph"); //graph button to initiate graphing
+        JButton colorButton = new JButton("Choose Color"); //choose color button to open color dialog
 
-        //graph button listener
+        //graph button listener -> if user clicks, will regraph
         graphButton.addActionListener(e -> {
             Color graphColor = Color.blue;
             if (graphColor != null) {
@@ -155,7 +163,7 @@ public class EquationGrapher extends JFrame {
             }
         });
 
-        //color button listener
+        //color button listener -> if user clicks, will change color and regraph
         colorButton.addActionListener(e -> {
             Color graphColor = JColorChooser.showDialog(this, "Choose Graph Color", Color.BLUE);
             if (graphColor != null) {
@@ -181,36 +189,9 @@ public class EquationGrapher extends JFrame {
 
         add(panel, BorderLayout.NORTH);
         add(graphPanel, BorderLayout.CENTER);
-
-        JEP myParser = new org.nfunk.jep.JEP(); //initializing parser
-
-        myParser.setImplicitMul(true);
-
-        // Load the standard functions
-        myParser.addStandardFunctions();
-
-        // Load the standard constants, and complex variables/functions
-        myParser.addStandardConstants();
-        myParser.addComplex();
-    }
-
-    //if graph button clicked, repaint
-    private class GraphButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String equation = equationField.getText();
-            graphPanel.setEquation(equation);
-            graphPanel.repaint();
-        }
     }
 
     private class GraphPanel extends JPanel {
-        private String equation;
-
-        public void setEquation(String equation) {
-            this.equation = equation;
-        }
-
 
         //draw graph method - call to output to canvas
         private void drawGraph(Graphics2D g2d, String equation) {
@@ -226,6 +207,7 @@ public class EquationGrapher extends JFrame {
             int maxScale = 10;
 
             //evaluating the equation for every x value, and displaying it
+            //keeping padding and scale in mind
             for (int x = graphLeft; x <= graphRight; x++) {
                     double xValue = (double) (x - graphLeft - (graphRight - graphLeft) / 2) / ((graphRight - graphLeft) / 2) * maxScale;
                     double yValue = evaluateEquation(equation, xValue);
@@ -283,15 +265,17 @@ public class EquationGrapher extends JFrame {
                 }
             }
 
+            //drawing each equation in arraylist -> should only be 1
             for (EquationData data : equations) {
                 g2d.setColor(data.color);
                 drawGraph(g2d, data.equation);
             }
             }
 
+        //evaluting the equation by passing it into the parser
         private double evaluateEquation(String equation, double x) { //evaluate equation method, plugs x value into equation
-            myParser.addVariable("x", x);
-            myParser.parseExpression(equation);
+            myParser.addVariable("x", x); //setup
+            myParser.parseExpression(equation); //parsing here
             System.out.println(myParser.getValue());
             return myParser.getValue();
         }
