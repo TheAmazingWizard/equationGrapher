@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jep-2.23">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Grapher/jep-2.23.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
